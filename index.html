@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C语言代码学习工具 - 离线版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #6a1b9a, #8e24aa);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .editor-container, .output-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #6a1b9a;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        #inputData {
+            min-height: 100px;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to right, #6a1b9a, #8e24aa);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button i {
+            margin-right: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(106, 27, 154, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #output {
+            min-height: 200px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6a1b9a;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+        
+        .warning {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>C语言代码学习工具</h1>
+            <p class="description">离线版本 - 无需网络连接，所有功能在浏览器中本地运行</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="editor-container">
+                <div class="section-title">
+                    <i>📝</i> C语言代码编辑器
+                </div>
+                <textarea id="codeEditor" placeholder="在这里输入你的C代码...">#include &lt;stdio.h&gt;
+
+int main() {
+    int number;
+    printf("请输入一个整数: ");
+    scanf("%d", &number);
+    
+    if(number % 2 == 0) {
+        printf("%d 是偶数\n", number);
+    } else {
+        printf("%d 是奇数\n", number);
+    }
+    
+    // 计算并输出平方
+    int square = number * number;
+    printf("%d 的平方是: %d\n", number, square);
+    
+    return 0;
+}</textarea>
+                
+                <div class="section-title">
+                    <i>⌨️</i> 标准输入数据 (用于scanf)
+                </div>
+                <textarea id="inputData" placeholder="输入数据（每行一个值）">5</textarea>
+                
+                <div class="buttons">
+                    <button onclick="checkErrors()"><i>🔍</i> 检查错误</button>
+                    <button onclick="addComments()"><i>💬</i> 添加注释</button>
+                    <button onclick="explainCode()"><i>📚</i> 代码讲解</button>
+                    <button onclick="runCode()"><i>🚀</i> 运行代码</button>
+                    <button onclick="formatCode()"><i>✨</i> 格式化代码</button>
+                    <button onclick="clearAll()"><i>🗑️</i> 清空所有</button>
+                </div>
+            </div>
+            
+            <div class="output-container">
+                <div class="section-title">
+                    <i>📊</i> 输出结果
+                </div>
+                <div id="output">准备就绪。请编写代码并点击上面的按钮。</div>
+                
+                <div class="loader" id="loader"></div>
+                
+                <div class="status-bar">
+                    <span id="status">状态: 就绪</span>
+                    <span id="version">离线版本 v1.0</span>
+                </div>
+                
+                <div class="section-title" style="margin-top: 20px;">
+                    <i>ℹ️</i> 使用说明
+                </div>
+                <ul style="padding-left: 20px; margin-top: 10px;">
+                    <li>所有功能在浏览器中本地运行，无需网络连接</li>
+                    <li>"运行代码"功能模拟基本C语言语法</li>
+                    <li>支持简单的scanf输入（通过输入数据框）</li>
+                    <li>支持代码错误检查、注释添加和代码讲解</li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            开发单位：湖北师范大学 &bull; 开发者：冯喆 &bull; 离线版本
+        </footer>
+    </div>
+
+    <script>
+        // 初始化状态
+        document.getElementById('status').textContent = '状态: 就绪';
+        
+        // 获取代码和输入
+        function getCode() {
+            return document.getElementById('codeEditor').value;
+        }
+
+        function getInput() {
+            return document.getElementById('inputData').value;
+        }
+
+        // 设置输出
+        function setOutput(text) {
+            document.getElementById('output').innerText = text;
+        }
+        
+        // 设置状态
+        function setStatus(text) {
+            document.getElementById('status').textContent = '状态: ' + text;
+        }
+
+        // 显示/隐藏加载动画
+        function showLoader(show) {
+            document.getElementById('loader').style.display = show ? 'block' : 'none';
+        }
+
+        // 检查代码错误
+        function checkErrors() {
+            setStatus('正在检查错误');
+            showLoader(true);
+            
+            setTimeout(() => {
+                const code = getCode();
+                let errors = [];
+                let bracketCount = 0;
+                let curlyCount = 0;
+                let lines = code.split('\n');
+
+                lines.forEach((line, index) => {
+                    const trimmed = line.trim();
+                    // 检查可能缺少分号的情况
+                    if (!trimmed.endsWith(';') && !trimmed.endsWith('{') && !trimmed.endsWith('}') && 
+                        trimmed !== '' && !trimmed.startsWith('#include') && !trimmed.startsWith('//') &&
+                        !trimmed.startsWith('/*') && !trimmed.startsWith('*') && !trimmed.endsWith('*/') &&
+                        !trimmed.startsWith('#define') && !trimmed.startsWith('if') && !trimmed.startsWith('else') &&
+                        !trimmed.startsWith('for') && !trimmed.startsWith('while') && !trimmed.startsWith('do') &&
+                        !trimmed.startsWith('return') && !trimmed.startsWith('{') && !trimmed.startsWith('}')) {
+                        errors.push(`第${index+1}行: 可能缺少分号。`);
+                    }
+                    
+                    // 检查括号匹配
+                    bracketCount += (line.match(/\(/g) || []).length - (line.match(/\)/g) || []).length;
+                    curlyCount += (line.match(/\{/g) || []).length - (line.match(/\}/g) || []).length;
+                });
+
+                if (bracketCount !== 0) {
+                    errors.push('小括号不匹配。');
+                }
+                if (curlyCount !== 0) {
+                    errors.push('大括号不匹配。');
+                }
+
+                if (errors.length === 0) {
+                    setOutput('没有发现明显错误！（注意：这只是基本检查，不是完整编译。）');
+                } else {
+                    setOutput('发现潜在错误：\n' + errors.join('\n'));
+                }
+                
+                setStatus('错误检查完成');
+                showLoader(false);
+            }, 500);
+        }
+
+        // 添加注释
+        function addComments() {
+            setStatus('正在添加注释');
+            showLoader(true);
+            
+            setTimeout(() => {
+                const code = getCode();
+                let lines = code.split('\n');
+                let commentedCode = lines.map(line => {
+                    let trimmed = line.trim();
+                    let comment = '';
+                    
+                    if (trimmed.startsWith('#include')) {
+                        comment = '// 包含头文件';
+                    } else if (trimmed.startsWith('#define')) {
+                        comment = '// 宏定义';
+                    } else if (/int main\s*\(/.test(trimmed)) {
+                        comment = '// 主函数入口';
+                    } else if (trimmed.includes('printf(')) {
+                        comment = '// 输出信息到控制台';
+                    } else if (trimmed.includes('scanf(')) {
+                        comment = '// 从控制台读取输入';
+                    } else if (trimmed.startsWith('if (')) {
+                        comment = '// 条件判断';
+                    } else if (trimmed.startsWith('for (')) {
+                        comment = '// 循环语句';
+                    } else if (trimmed.startsWith('while (')) {
+                        comment = '// 循环语句';
+                    } else if (trimmed.startsWith('int ') && trimmed.includes(';')) {
+                        comment = '// 变量声明';
+                    } else if (trimmed.includes('=') && trimmed.includes(';')) {
+                        comment = '// 变量赋值';
+                    } else if (trimmed.startsWith('return ')) {
+                        comment = '// 函数返回值';
+                    } else if (trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+                        return line; // 已有注释，不添加
+                    } else if (trimmed === '') {
+                        return line;
+                    } else {
+                        comment = '// 代码语句';
+                    }
+                    
+                    return line + (comment ? '  ' + comment : '');
+                }).join('\n');
+                
+                setOutput('添加注释后的代码：\n' + commentedCode);
+                setStatus('注释添加完成');
+                showLoader(false);
+            }, 500);
+        }
+
+        // 代码讲解
+        function explainCode() {
+            setStatus('正在生成代码讲解');
+            showLoader(true);
+            
+            setTimeout(() => {
+                const code = getCode();
+                let explanation = '代码讲解：\n\n';
+                
+                if (code.includes('#include <stdio.h>') || code.includes('#include<stdio.h>')) {
+                    explanation += '- #include <stdio.h>: 包含标准输入输出库，用于printf和scanf等函数。\n';
+                }
+                
+                if (code.includes('int main()')) {
+                    explanation += '- int main(): 程序的主入口函数，所有C程序都必须有main函数。\n';
+                }
+                
+                if (code.includes('printf(')) {
+                    explanation += '- printf(): 格式化输出函数，用于向控制台打印文本。\n';
+                }
+                
+                if (code.includes('scanf(')) {
+                    explanation += '- scanf(): 格式化输入函数，用于从标准输入读取数据。\n';
+                }
+                
+                if (code.includes('if (')) {
+                    explanation += '- if: 条件语句，用于根据条件执行不同的代码块。\n';
+                }
+                
+                if (code.includes('for (')) {
+                    explanation += '- for: 循环语句，用于重复执行代码块。\n';
+                }
+                
+                if (code.includes('while (')) {
+                    explanation += '- while: 循环语句，当条件满足时重复执行代码块。\n';
+                }
+                
+                if (code.includes('return 0;')) {
+                    explanation += '- return 0;: 表示程序正常结束，返回0给操作系统。\n';
+                }
+                
+                explanation += '\n（这是一个基础讲解，对于复杂代码，请咨询老师或使用更高级工具。）';
+                
+                setOutput(explanation);
+                setStatus('代码讲解完成');
+                showLoader(false);
+            }, 500);
+        }
+
+        // 运行代码（模拟）
+        function runCode() {
+            setStatus('正在运行代码');
+            showLoader(true);
+            
+            setTimeout(() => {
+                try {
+                    const code = getCode();
+                    const input = getInput().split('\n');
+                    let inputIndex = 0;
+                    let output = '';
+                    
+                    // 简单的C代码模拟执行
+                    const lines = code.split('\n');
+                    
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        
+                        // 模拟printf
+                        if (line.includes('printf(')) {
+                            const match = line.match(/printf\("([^"]*)"\)/);
+                            if (match) {
+                                output += match[1].replace(/\\n/g, '\n') + '\n';
+                            }
+                        }
+                        
+                        // 模拟scanf
+                        if (line.includes('scanf(')) {
+                            if (inputIndex < input.length) {
+                                output += `读取输入: ${input[inputIndex]}\n`;
+                                inputIndex++;
+                            } else {
+                                output += "错误: 没有足够的输入数据\n";
+                            }
+                        }
+                    }
+                    
+                    if (output === '') {
+                        output = '代码运行完成，但没有输出结果。';
+                    } else {
+                        output = '模拟运行结果：\n\n' + output;
+                    }
+                    
+                    setOutput(output);
+                    setStatus('代码运行完成');
+                } catch (err) {
+                    setOutput('运行错误: ' + err.message);
+                    setStatus('运行出错');
+                } finally {
+                    showLoader(false);
+                }
+            }, 800);
+        }
+
+        // 格式化代码
+        function formatCode() {
+            setStatus('正在格式化代码');
+            showLoader(true);
+            
+            setTimeout(() => {
+                const code = getCode();
+                // 简单的格式化：确保大括号和缩进
+                let formatted = code.replace(/\{/g, ' {\n');
+                formatted = formatted.replace(/\}/g, '\n}\n');
+                formatted = formatted.replace(/;\s*/g, ';\n');
+                
+                // 设置缩进
+                let indentLevel = 0;
+                let lines = formatted.split('\n');
+                let result = [];
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    if (line === '') continue;
+                    
+                    if (line.includes('}')) indentLevel--;
+                    
+                    result.push('    '.repeat(indentLevel) + line);
+                    
+                    if (line.includes('{')) indentLevel++;
+                }
+                
+                document.getElementById('codeEditor').value = result.join('\n');
+                setOutput('代码已格式化。');
+                setStatus('格式化完成');
+                showLoader(false);
+            }, 500);
+        }
+
+        // 清空所有
+        function clearAll() {
+            if (confirm('确定要清空所有内容吗？')) {
+                document.getElementById('codeEditor').value = '';
+                document.getElementById('inputData').value = '';
+                setOutput('内容已清空。');
+                setStatus('已清空');
+            }
+        }
+    </script>
+</body>
+</html>
